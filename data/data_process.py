@@ -208,13 +208,15 @@ def get_data_in_state(processed_csv, state):
             pass
     print(f'Total unique attribute tags found: {len(attribute_tags)}')
     print(f'All attribute tags in frequencies order: {attribute_tags.most_common()}')
-    return state_df 
+    return state_df_restaurants 
 
 if __name__ == '__main__':
     NEED_UPDTATE = False  # Set to True to reprocess raw data
+    State = 'CA'  # State code to filter data for
 
     data_dir = os.path.dirname(__file__)
     processed_csv = os.path.join(data_dir, 'processed', 'businesses.csv')
     if not os.path.isfile(processed_csv) or NEED_UPDTATE:
         process_raw()
-    get_data_in_state(processed_csv, 'PA')
+    state_df_restaurants = get_data_in_state(processed_csv, State)
+    state_df_restaurants.to_json(os.path.join(data_dir, 'processed', f'{State.lower()}_restaurants.json'), orient='records', indent=2)
