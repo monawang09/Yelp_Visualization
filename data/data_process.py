@@ -68,7 +68,7 @@ def process_business_file(in_path: str, out_dir: str):
 
     fieldnames = [
         'business_id', 'name', 'city', 'state', 'stars', 'review_count',
-        'latitude', 'longitude', 'is_open', 'categories'
+        'latitude', 'longitude', 'is_open', 'categories','attributes', 'hours'
     ]
 
     with open(out_csv, 'w', newline='', encoding='utf-8') as csvfile:
@@ -87,6 +87,8 @@ def process_business_file(in_path: str, out_dir: str):
             longitude = obj.get('longitude')
             is_open = obj.get('is_open', 0)
             categories = safe_categories(obj.get('categories'))
+            attributes = obj.get('attributes', {})
+            hours = obj.get('hours', {})
 
             writer.writerow({
                 'business_id': business_id,
@@ -99,6 +101,8 @@ def process_business_file(in_path: str, out_dir: str):
                 'longitude': longitude,
                 'is_open': is_open,
                 'categories': categories,
+                'attributes': attributes,
+                'hours': hours 
             })
 
             # update aggregates
@@ -185,11 +189,16 @@ def get_data_in_state(processed_csv, state):
     df = pd.read_csv(processed_csv)
     state_df = df[df['state'] == state]
     print(f'Found {len(state_df)} businesses in state {state}.')
+    print(f'state_df columns: {state_df.columns.tolist()}')
+    print(f'Found attributes containing "RestaurantsPriceRange2": {state_df["attributes"].str.contains("RestaurantsPriceRange2", na=False).sum()} businesses.') 
+    print(f'Found categories containing "Restaurants": {state_df["categories"].str.contains("Restaurants", na=False).sum()} businesses.')
     return state_df
 
 if __name__ == '__main__':
+    NEED_UPDTATE = False  # Set to True to reprocess raw data
+
     data_dir = os.path.dirname(__file__)
     processed_csv = os.path.join(data_dir, 'processed', 'businesses.csv')
-    if not os.path.isfile(processed_csv):
+    if not os.path.isfile(processed_csv) or NEED_UPDTATE:
         process_raw()
     get_data_in_state(processed_csv, 'CA')
