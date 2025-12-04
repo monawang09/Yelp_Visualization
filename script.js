@@ -33,9 +33,8 @@ fetch('./data/processed/ca_restaurants.json')
 
         setupRadiusListener();
         setupRatingListener();
-        map_plotting();
-        UpdateDataInRange();
-        map_plotting(); //make sure everything is plotted correctly
+        refreshWeb();
+        refreshWeb(); // call twice to ensure proper initial rendering
     })
 
 // slider value (0–100) -> log-scaled radius (100–4000)
@@ -44,6 +43,11 @@ function sliderToRadius(v) {
   const ratio = maxRadius / minRadius;
   const r = minRadius * Math.pow(ratio, t); // exponential interpolation
   return Math.round(r); // optional: round to integer
+}
+
+function refreshWeb() {
+    UpdateDataInRange();
+    map_plotting();
 }
 
 // radius -> slider value (if you ever need to set it from code)
@@ -155,7 +159,7 @@ function map_plotting() { // Filter data by isOpen if checked
     window.currentLocationMarker.on('dragend', function(e) {
         const newPos = e.target.getLatLng();
         myCurrentLocation = [newPos.lat, newPos.lng];
-        map_plotting(); // Re-plot everything with new location
+        refreshWeb();
     });
 
     // Update circle based on new user input radius
@@ -218,8 +222,7 @@ function setupRatingListener() {
     ratingRange.addEventListener('input', function() {
         ratingValue.textContent = ratingRange.value;
 
-        UpdateDataInRange();
-        map_plotting(); // replot with same global businessData
+        refreshWeb();
     });
 }
 
@@ -233,8 +236,7 @@ function setupRadiusListener() {
     userInputRadius = parseInt(sliderToRadius(radiusRange.value), 10);
     radiusValue.textContent = userInputRadius;
 
-    UpdateDataInRange();
-    map_plotting(); // replot with same global businessData
+    refreshWeb();
   });
 }
 
