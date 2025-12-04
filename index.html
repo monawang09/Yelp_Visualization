@@ -17,10 +17,15 @@
        
         <div class="side-panel">
             <h2 class="side-title">Find Your Next Yelp Restaurant</h2>
+            <h4>Drag the label the change your current location</h4>
             <div class="side-controls">
                 <label for="radiusRange">Radius (meters): </label>
                 <input type="range" id="radiusRange" min="1" max="100" step="1" value="50">
                 <span id="radiusValue">4000</span>
+                <br><br>
+                <label for="ratingRange"> Rating: </label>
+                <input type="range" id="ratingRange" min="0" max="5" step="0.2" value="0">
+                <span id="ratingValue">0</span>
                 <br><br>
                 <input type="checkbox" id="isOpenCheckbox">
                 <label for="isOpenCheckbox">Show only open restaurants</label>
