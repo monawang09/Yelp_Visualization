@@ -9,7 +9,7 @@
 #main-panel {
     display: flex;
     flex-direction: column;
-    width: 70vw;
+    width: 80vw;
     padding: 10px;
 }
 

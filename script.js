@@ -207,7 +207,7 @@ function plot_reviewdensity() {
     data = rawData.map(d => Math.min(d, cutoff+bin_width));
 
     // Set up dimensions and margins
-    const width = 700;
+    const width = 600;
     const height = 400;
     const margin = {top: 20, right: 30, bottom: 30, left: 40};
 
