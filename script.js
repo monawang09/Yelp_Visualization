@@ -10,22 +10,46 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 let businessData = [];
+let filteredData = [];
 let businessDataInRange = [];
 let myCurrentLocation = [34.4208, -119.6982];
 let userInputRadius = 4000; // Initial radius so the circle border is visible but not full screen
+let currentLocationMarker;
+
+let minRadius = 100;
+let maxRadius = 4000;
 
 // Fetch and store JSON data
 fetch('../data/processed/ca_restaurants.json')
     .then(response => response.json())
     .then(data => {
         businessData = data;
-        setupRadiusListener();
+        maxRadius = getInitialRadius();
+        userInputRadius = maxRadius;
+        document.getElementById('radiusRange').max = radiusToSlider(maxRadius);
+        document.getElementById('radiusRange').value = radiusToSlider(userInputRadius);
+        document.getElementById('radiusValue').textContent = userInputRadius;
 
+        setupRadiusListener();
         map_plotting();
     })
 
+// slider value (0–100) -> log-scaled radius (100–4000)
+function sliderToRadius(v) {
+  const t = v / 100; // 0–1
+  const ratio = maxRadius / minRadius;
+  const r = minRadius * Math.pow(ratio, t); // exponential interpolation
+  return Math.round(r); // optional: round to integer
+}
 
-let currentLocationMarker;
+// radius -> slider value (if you ever need to set it from code)
+function radiusToSlider(r) {
+  const ratio = maxRadius / minRadius;
+  const t = Math.log(r / minRadius) / Math.log(ratio); // 0–1
+  return Math.round(t * 100);
+}
+
+
 
 // Listen for changes to the isOpenCheckbox
 const isOpenCheckbox = document.getElementById('isOpenCheckbox');
@@ -59,14 +83,9 @@ function map_plotting() {
     }
     window.businessMarkers = [];
 
-    // Filter data: first by radius, then by isOpen if checked
-    let filteredData = businessData.filter(business => {
+    // Filter data by isOpen if checked
+    filteredData = businessData.filter(business => {
         if (!(business.latitude && business.longitude)) return false;
-        const distance = getDistanceFromLatLonInMeters(
-            myCurrentLocation[0], myCurrentLocation[1],
-            parseFloat(business.latitude), parseFloat(business.longitude)
-        );
-        if (distance > userInputRadius) return false;
         if (isOpenCheckbox && isOpenCheckbox.checked) {
             return String(business.is_open) === '1';
         }
@@ -121,7 +140,7 @@ function setupRadiusListener() {
   if (!radiusRange || !radiusValue) return;
 
   radiusRange.addEventListener('input', function() {
-    userInputRadius = parseInt(radiusRange.value, 10);
+    userInputRadius = parseInt(sliderToRadius(radiusRange.value), 10);
     radiusValue.textContent = userInputRadius;
 
     map_plotting(); // replot with same global businessData
@@ -133,7 +152,7 @@ function setupRadiusListener() {
 // Function to filter data points within xRadius of myCurrentLocation
 function UpdateDataInRange() { 
     businessDataInRange = [];
-    businessData.forEach(business => {
+    filteredData.forEach(business => {
         if (business.latitude && business.longitude) {
             const distance = getDistanceFromLatLonInMeters(
                 myCurrentLocation[0], myCurrentLocation[1],
@@ -173,21 +192,6 @@ function getInitialRadius() {
     const maxDist = Math.max(north, south, east, west);
     return Math.round(maxDist * 0.6); 
 }
-
-userInputRadius = getInitialRadius();
-
-// Update the slider and label
-window.addEventListener('DOMContentLoaded', () => {
-    const radiusRange = document.getElementById('radiusRange');
-    const radiusValue = document.getElementById('radiusValue');
-    if (radiusRange && radiusValue) {
-        radiusRange.min = 1000;
-        radiusRange.max = 10000;
-        radiusRange.step = 100;
-        radiusRange.value = userInputRadius;
-        radiusValue.textContent = userInputRadius;
-    }
-});
 
 function plot_reviewdensity() {
     // remove the previous chart (only the ones with this class)
