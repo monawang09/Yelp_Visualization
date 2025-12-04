@@ -12,7 +12,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let businessData = [];
 let businessDataInRange = [];
 let myCurrentLocation = [34.4208, -119.6982];
-let userInputRadius = 500; // Default radius
+let userInputRadius = 4000; // Initial radius so the circle border is visible but not full screen
 
 // Fetch and store JSON data
 fetch('../data/processed/ca_restaurants.json')
@@ -27,6 +27,14 @@ fetch('../data/processed/ca_restaurants.json')
 
 let currentLocationMarker;
 
+// Listen for changes to the isOpenCheckbox
+const isOpenCheckbox = document.getElementById('isOpenCheckbox');
+if (isOpenCheckbox) {
+    isOpenCheckbox.addEventListener('change', function() {
+        map_plotting();
+    });
+}
+
 function map_plotting() {
     // Remove previous marker and circle for current location only
     if (window.currentCircle) {
@@ -36,31 +44,46 @@ function map_plotting() {
         map.removeLayer(window.currentLocationMarker);
     }
 
-    // Only plot business markers once
-    if (!window.businessMarkers) {
-        window.businessMarkers = [];
-        businessData.forEach(business => {
-            if (business.latitude && business.longitude) {
-                const marker = L.circleMarker([business.latitude, business.longitude], {
-                    radius: 8,
-                    color: 'gray',
-                    fillColor: 'gray',
-                    fillOpacity: 0.7
-                })
-                .addTo(map)
-                .bindPopup(`<b>${business.name}</b><br>Rating: ${business.stars}`);
-                window.businessMarkers.push(marker);
-            }
-        });
-    }
-
-    // Draw a circular range around the current location
+    // Draw a circular range around the current location (default pane, thick stroke)
     window.currentCircle = L.circle(myCurrentLocation, {
         radius: userInputRadius,
         color: 'blue',
+        weight: 3, // thicker border for visibility
         fillColor: '#30f',
-        fillOpacity: 0.2
+        fillOpacity: 0.05 // more transparent for better marker contrast
     }).addTo(map);
+
+    // Remove and replot business markers every time for correct z-order
+    if (window.businessMarkers) {
+        window.businessMarkers.forEach(marker => map.removeLayer(marker));
+    }
+    window.businessMarkers = [];
+
+    // Filter data: first by radius, then by isOpen if checked
+    let filteredData = businessData.filter(business => {
+        if (!(business.latitude && business.longitude)) return false;
+        const distance = getDistanceFromLatLonInMeters(
+            myCurrentLocation[0], myCurrentLocation[1],
+            parseFloat(business.latitude), parseFloat(business.longitude)
+        );
+        if (distance > userInputRadius) return false;
+        if (isOpenCheckbox && isOpenCheckbox.checked) {
+            return String(business.is_open) === '1';
+        }
+        return true;
+    });
+
+    filteredData.forEach(business => {
+        const marker = L.circleMarker([business.latitude, business.longitude], {
+            radius: 8,
+            color: 'gray',
+            fillColor: 'gray',
+            fillOpacity: 0.7 // fixed opacity
+        })
+        .addTo(map)
+        .bindPopup(`<b>${business.name}</b><br>Rating: ${business.stars}`);
+        window.businessMarkers.push(marker);
+    });
 
     // Plot my current location with a draggable Leaflet marker
     window.currentLocationMarker = L.marker(myCurrentLocation, {
@@ -137,6 +160,34 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
     const distance = R * c;
     return distance;
 }
+
+// Set initial radius to a visible but not full-screen circle
+function getInitialRadius() {
+    const bounds = map.getBounds();
+    const center = map.getCenter();
+    // Get distances to each edge (N, S, E, W)
+    const north = getDistanceFromLatLonInMeters(center.lat, center.lng, bounds.getNorth(), center.lng);
+    const south = getDistanceFromLatLonInMeters(center.lat, center.lng, bounds.getSouth(), center.lng);
+    const east = getDistanceFromLatLonInMeters(center.lat, center.lng, center.lat, bounds.getEast());
+    const west = getDistanceFromLatLonInMeters(center.lat, center.lng, center.lat, bounds.getWest());
+    const maxDist = Math.max(north, south, east, west);
+    return Math.round(maxDist * 0.6); 
+}
+
+userInputRadius = getInitialRadius();
+
+// Update the slider and label
+window.addEventListener('DOMContentLoaded', () => {
+    const radiusRange = document.getElementById('radiusRange');
+    const radiusValue = document.getElementById('radiusValue');
+    if (radiusRange && radiusValue) {
+        radiusRange.min = 1000;
+        radiusRange.max = 10000;
+        radiusRange.step = 100;
+        radiusRange.value = userInputRadius;
+        radiusValue.textContent = userInputRadius;
+    }
+});
 
 function plot_reviewdensity() {
     // remove the previous chart (only the ones with this class)
