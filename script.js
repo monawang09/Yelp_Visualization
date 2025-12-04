@@ -1,7 +1,7 @@
 // Yelp Visualization Scripts!
 
 // Initialize map centered on San Francisco
-const map = L.map('map').setView([37.7749, -122.4194], 13);
+const map = L.map('map').setView([34.4208, -119.6982], 12);
 
 // Add tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -9,6 +9,24 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19
 }).addTo(map);
 
-// Add a sample marker
-L.marker([37.7749, -122.4194]).addTo(map)
-    .bindPopup('San Francisco');
+let businessData = [];
+
+// Fetch and store JSON data
+fetch('../data/processed/ca_restaurants.json')
+    .then(response => response.json())
+    .then(data => {
+        businessData = data;
+        map_plotting();
+    })
+
+console.log(businessData.length);
+
+function map_plotting() {
+    businessData.forEach(business => {
+        if (business.latitude && business.longitude) {
+            L.marker([business.latitude, business.longitude])
+                .addTo(map)
+                .bindPopup(`<b>${business.name}</b><br>Rating: ${business.stars}`);
+        }
+    });
+}
