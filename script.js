@@ -87,11 +87,11 @@ function map_plotting() { // Filter data by isOpen if checked
 
     filteredData = businessData.filter(business => {
         if (!(business.latitude && business.longitude)) return false;
-        if (isOpenCheckbox && isOpenCheckbox.checked) {
-            return String(business.is_open) === '1';
-        }
         if (business.stars < parseFloat(document.getElementById('ratingRange').value)) {
             return false;
+        }
+        if (isOpenCheckbox && isOpenCheckbox.checked) {
+            return String(business.is_open) === '1';
         }
         return true;
     });
