@@ -19,11 +19,9 @@ fetch('../data/processed/ca_restaurants.json')
     .then(response => response.json())
     .then(data => {
         businessData = data;
-        map_plotting();
-        console.log(businessData.length);
-
         setupRadiusListener();
-        plot_reviewdensity(businessData);
+
+        map_plotting();
     })
 
 
@@ -90,8 +88,7 @@ function map_plotting() {
         fillColor: '#30f',
         fillOpacity: 0.2
     }).addTo(map);
-    UpdateDataInRange();
-    console.log("Businesses in range:", businessDataInRange.length);
+    UpdateDataInRange(); 
 }
 
 function setupRadiusListener() {
@@ -124,6 +121,8 @@ function UpdateDataInRange() {
             }
         }
     });
+    console.log("Businesses in range:", businessDataInRange.length);
+    plot_reviewdensity();
 }
 
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
@@ -139,64 +138,84 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
     return distance;
 }
 
-function plot_reviewdensity(datajson) {
+function plot_reviewdensity() {
+    // remove the previous chart (only the ones with this class)
+    d3.selectAll("svg.review-density").remove();
 
-  const rawData = datajson.map(d => +d.review_count);
-  const data_min = d3.min(rawData);
-  const cutoff = 700;
-  const bin_width = 100;
+    rawData = businessDataInRange.map(d => +d.review_count);
 
-  // Clamp values above 1000 into the 1000+ bin
-  const data = rawData.map(d => Math.min(d, cutoff+bin_width));
+    const cutoff = 700;
+    const bin_width = 100;
 
-  // Set up dimensions and margins
-  const width = 800;
-  const height = 400;
-  const margin = {top: 20, right: 30, bottom: 30, left: 40};
+    // Clamp values above 1000 into the 1000+ bin
+    data = rawData.map(d => Math.min(d, cutoff+bin_width));
 
-  // Create SVG container
-  const svg = d3.select("body")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    // Set up dimensions and margins
+    const width = 800;
+    const height = 400;
+    const margin = {top: 20, right: 30, bottom: 30, left: 40};
 
-  // X scale only goes up to 1000
-  const x = d3.scaleLinear()
-    .domain([data_min, cutoff+bin_width]).nice()
-    .range([margin.left, width - margin.right]);
+    // Create SVG container
+    const svg = d3.select("body")
+        .append("svg")
+        .attr("class", "review-density")
+        .attr("width", width)
+        .attr("height", height);
 
-  // Histogram on the *clamped* data
-  const bins = d3.bin()
-    .domain(x.domain())
-    .thresholds(cutoff/bin_width+1)(data);
+    // X scale only goes up to 1000
+    x = d3.scaleLinear()
+        .domain([0, cutoff+bin_width]).nice()
+        .range([margin.left, width - margin.right]);
 
-  // Y scale
-  const y = d3.scaleLinear()
-    .domain([0, d3.max(bins, d => d.length)]).nice()
-    .range([height - margin.bottom, margin.top]);
+    // Histogram on the *clamped* data
+    bins = d3.bin()
+        .domain(x.domain())
+        .thresholds(cutoff/bin_width+1)(data);
 
-  // Draw bars
-  svg.append("g")
-    .attr("fill", "steelblue")
-    .selectAll("rect")
-    .data(bins)
-    .join("rect")
-      .attr("x", d => x(d.x0) + 1)
-      .attr("y", d => y(d.length))
-      .attr("width", d => x(d.x1) - x(d.x0) - 1)
-      .attr("height", d => y(0) - y(d.length));
+    // Y scale
+    y = d3.scaleLinear()
+        .domain([0, d3.max(bins, d => d.length)]).nice()
+        .range([height - margin.bottom, margin.top]);
 
-  // X axis: show "1000+" at the end
-  svg.append("g")
-    .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(
-      d3.axisBottom(x)
-        .ticks(10)
-        .tickFormat(d => d === cutoff+bin_width ? cutoff.toString()+"+" : d)
-    );
+    // Draw bars
+    svg.append("g")
+        .attr("fill", "steelblue")
+        .selectAll("rect")
+        .data(bins)
+        .join("rect")
+        .attr("x", d => x(d.x0) + 1)
+        .attr("y", d => y(d.length))
+        .attr("width", d => x(d.x1) - x(d.x0) - 1)
+        .attr("height", d => y(0) - y(d.length));
 
-  // Y axis
-  svg.append("g")
-    .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(y));
+    // X axis: show "1000+" at the end
+    svg.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(
+        d3.axisBottom(x)
+            .ticks(10)
+            .tickFormat(d => d === cutoff+bin_width ? cutoff.toString()+"+" : d)
+        );
+
+    // Y axis
+    svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y));
+
+    // X axis label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("x", (width) / 2)
+        .attr("y", height)           // a bit below the x axis
+        .text("Review count");
+
+    // Y axis label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("x", - (height / 2))
+        .attr("y", 15)                   // a bit left of the y axis
+        .text("Number of restaurants");
 }
