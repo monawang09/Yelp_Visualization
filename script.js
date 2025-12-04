@@ -31,6 +31,7 @@ fetch('../data/processed/ca_restaurants.json')
         document.getElementById('radiusValue').textContent = userInputRadius;
 
         setupRadiusListener();
+        setupRatingListener();
         map_plotting();
         map_plotting(); //make sure everything is plotted correctly
     })
@@ -88,6 +89,9 @@ function map_plotting() { // Filter data by isOpen if checked
         if (!(business.latitude && business.longitude)) return false;
         if (isOpenCheckbox && isOpenCheckbox.checked) {
             return String(business.is_open) === '1';
+        }
+        if (business.stars < parseFloat(document.getElementById('ratingRange').value)) {
+            return false;
         }
         return true;
     });
@@ -170,6 +174,17 @@ function map_plotting() { // Filter data by isOpen if checked
         .addTo(map)
         .bindPopup(`<b>${business.name}</b><br>Rating: ${business.stars}`);
         window.businessMarkers.push(marker);
+    });
+}
+
+function setupRatingListener() {
+    const ratingRange = document.getElementById('ratingRange');
+    const ratingValue = document.getElementById('ratingValue');
+
+    if (!ratingRange || !ratingValue) return;
+    ratingRange.addEventListener('input', function() {
+        ratingValue.textContent = ratingRange.value;
+        map_plotting(); // replot with same global businessData
     });
 }
 
