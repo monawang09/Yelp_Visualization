@@ -207,12 +207,12 @@ function plot_reviewdensity() {
     data = rawData.map(d => Math.min(d, cutoff+bin_width));
 
     // Set up dimensions and margins
-    const width = 800;
+    const width = 700;
     const height = 400;
     const margin = {top: 20, right: 30, bottom: 30, left: 40};
 
     // Create SVG container
-    const svg = d3.select("body")
+    const svg = d3.select("#density")
         .append("svg")
         .attr("class", "review-density")
         .attr("width", width)
@@ -272,6 +272,6 @@ function plot_reviewdensity() {
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", - (height / 2))
-        .attr("y", 15)                   // a bit left of the y axis
+        .attr("y", 10)                   // a bit left of the y axis
         .text("Number of restaurants");
 }
