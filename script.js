@@ -95,14 +95,40 @@ function map_plotting() {
     });
 
     filteredData.forEach(business => {
+           // Scale radius based on review_count (e.g., 3-15 pixels)
+        const reviewCount = business.review_count || 0;
+        const markerRadius = Math.min(3 + reviewCount / 50, 15); // scale and cap at 15
+
         const marker = L.circleMarker([business.latitude, business.longitude], {
-            radius: 8,
-            color: 'gray',
+            radius: markerRadius,
+            color: 'transparent',
             fillColor: 'gray',
-            fillOpacity: 0.7 // fixed opacity
+            fillOpacity: 0.3 // fixed opacity
         })
-        .addTo(map)
-        .bindPopup(`<b>${business.name}</b><br>Rating: ${business.stars}`);
+        .addTo(map);
+        window.businessMarkers.push(marker);
+    });
+
+    businessDataInRange.forEach(business => {
+        // Map star rating (1-5) to color hue (red=0° to green=120°)
+        const stars = business.stars || 1; // default to 1 if missing
+        // Map star rating (1-5) to afmhot colormap: 1→black, 5→white/yellow
+        const t = (stars - 1) / 4; // normalize to 0-1
+        const r = Math.round(255 * Math.pow(t, 0.5)); // black to red/white
+        const g = Math.round(255 * Math.pow(t, 1.5)); // slower increase
+        const b = 0; // no blue component
+        const color = `rgb(${r}, ${g}, ${b})`;
+        // Scale radius based on review_count (e.g., 3-15 pixels)
+        const reviewCount = business.review_count || 0;
+        const markerRadius = Math.min(3 + reviewCount / 50, 15); // scale and cap at 15
+        
+        const marker = L.circleMarker([business.latitude, business.longitude], {
+            radius: markerRadius,
+            color: 'transparent',
+            fillColor: color,
+            fillOpacity: 0.7
+        })
+        .addTo(map);
         window.businessMarkers.push(marker);
     });
 
@@ -130,8 +156,22 @@ function map_plotting() {
         radius: userInputRadius,
         color: 'blue',
         fillColor: '#30f',
-        fillOpacity: 0.2
+        fillOpacity: 0.1
     }).addTo(map);
+
+    filteredData.forEach(business => {
+        const marker = L.circleMarker([business.latitude, business.longitude], {
+            radius: 8,
+            // color: 'gray',
+            // fillColor: 'gray',
+            color: 'transparent', 
+            fillColor: 'transparent',
+            fillOpacity: 0 
+        })
+        .addTo(map)
+        .bindPopup(`<b>${business.name}</b><br>Rating: ${business.stars}`);
+        window.businessMarkers.push(marker);
+    });
 }
 
 function setupRadiusListener() {
