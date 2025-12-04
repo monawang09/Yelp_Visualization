@@ -177,6 +177,25 @@ def process_raw():
     for k, v in results.items():
         print(f' - {k}: {v}')
 
+def parse_attributes(attr_str):
+    if pd.isna(attr_str):
+        return None
+    try:
+        d = ast.literal_eval(attr_str)
+    except (ValueError, SyntaxError):
+        print(f"Failed to parse attributes: {attr_str}")
+        return None
+
+    # Optional: parse nested dict-like strings
+    for nested_key in ["Ambience", "GoodForMeal", "BusinessParking"]:
+        v = d.get(nested_key)
+        if isinstance(v, str):
+            try:
+                d[nested_key] = ast.literal_eval(v)
+            except (ValueError, SyntaxError):
+                pass
+    return d
+
 def get_data_in_state(processed_csv, state):
     """Utility function to read processed businesses CSV and filter by state.
 
@@ -201,15 +220,16 @@ def get_data_in_state(processed_csv, state):
     state_df_restaurants = state_df_restaurants[state_df_restaurants["attributes"].str.contains("RestaurantsPriceRange2", na=False)]
     print(f'Filtered down to {len(state_df_restaurants)} restaurants in state {state} with "RestaurantsPriceRange2" attribute.')
     print(f'Found most density of attributes containing "RestaurantsPriceRange2" in cities: {state_df_restaurants["city"].value_counts().head(5).to_dict()}')
+    
     # Extract attribute tags (keys) from JSON strings
+    state_df_restaurants["attributes"] = (
+        state_df_restaurants["attributes"].apply(parse_attributes)
+    )
+    # Count attribute keys using the parsed dicts
     attribute_tags = Counter()
-    for attr_str in state_df_restaurants["attributes"].dropna():
-        try:
-            attr_dict = ast.literal_eval(attr_str)
-            attribute_tags.update(attr_dict.keys())
-        except (ValueError, SyntaxError) as e:
-            print(f'Failed to parse attributes: {attr_str}')
-            pass
+    for d in state_df_restaurants["attributes"].dropna():
+        attribute_tags.update(d.keys())
+
     print(f'Total unique attribute tags found: {len(attribute_tags)}')
     print(f'All attribute tags in frequencies order: {attribute_tags.most_common()}')
     return state_df_restaurants 

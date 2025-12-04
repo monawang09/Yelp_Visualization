@@ -13,6 +13,13 @@
     padding: 10px;
 }
 
+#graphs-panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 50%;
+}
+
 #map {
     height: 50%;
 }
@@ -21,6 +28,11 @@
     width: 100%;
     height: 40%;
 
+}
+
+#pricerating {
+    width: 100%;
+    height: 40%;
 }
 
 .axis-label {
