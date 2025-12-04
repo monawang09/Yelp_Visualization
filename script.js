@@ -21,7 +21,7 @@ let minRadius = 100;
 let maxRadius = 4000;
 
 // Fetch and store JSON data
-fetch('../data/processed/ca_restaurants.json')
+fetch('./data/processed/ca_restaurants.json')
     .then(response => response.json())
     .then(data => {
         businessData = data;
