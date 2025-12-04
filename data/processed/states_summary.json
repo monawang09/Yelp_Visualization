@@ -1,0 +1,137 @@
+{
+  "CA": {
+    "business_count": 5203,
+    "average_stars": 3.997,
+    "total_reviews": 339637
+  },
+  "MO": {
+    "business_count": 10913,
+    "average_stars": 3.546,
+    "total_reviews": 483897
+  },
+  "AZ": {
+    "business_count": 9912,
+    "average_stars": 3.592,
+    "total_reviews": 412639
+  },
+  "PA": {
+    "business_count": 34039,
+    "average_stars": 3.573,
+    "total_reviews": 1540790
+  },
+  "TN": {
+    "business_count": 12056,
+    "average_stars": 3.571,
+    "total_reviews": 598195
+  },
+  "FL": {
+    "business_count": 26330,
+    "average_stars": 3.611,
+    "total_reviews": 1119926
+  },
+  "IN": {
+    "business_count": 11247,
+    "average_stars": 3.588,
+    "total_reviews": 472565
+  },
+  "LA": {
+    "business_count": 9924,
+    "average_stars": 3.679,
+    "total_reviews": 743176
+  },
+  "AB": {
+    "business_count": 5573,
+    "average_stars": 3.448,
+    "total_reviews": 105477
+  },
+  "NV": {
+    "business_count": 7715,
+    "average_stars": 3.737,
+    "total_reviews": 409950
+  },
+  "ID": {
+    "business_count": 4467,
+    "average_stars": 3.708,
+    "total_reviews": 152086
+  },
+  "DE": {
+    "business_count": 2265,
+    "average_stars": 3.355,
+    "total_reviews": 67370
+  },
+  "IL": {
+    "business_count": 2145,
+    "average_stars": 3.37,
+    "total_reviews": 49676
+  },
+  "NJ": {
+    "business_count": 8536,
+    "average_stars": 3.459,
+    "total_reviews": 249837
+  },
+  "NC": {
+    "business_count": 1,
+    "average_stars": 2.0,
+    "total_reviews": 29
+  },
+  "CO": {
+    "business_count": 3,
+    "average_stars": 4.0,
+    "total_reviews": 30
+  },
+  "WA": {
+    "business_count": 2,
+    "average_stars": 3.5,
+    "total_reviews": 19
+  },
+  "HI": {
+    "business_count": 2,
+    "average_stars": 4.25,
+    "total_reviews": 32
+  },
+  "UT": {
+    "business_count": 1,
+    "average_stars": 4.5,
+    "total_reviews": 19
+  },
+  "TX": {
+    "business_count": 4,
+    "average_stars": 2.875,
+    "total_reviews": 33
+  },
+  "MT": {
+    "business_count": 1,
+    "average_stars": 5.0,
+    "total_reviews": 6
+  },
+  "MI": {
+    "business_count": 1,
+    "average_stars": 2.5,
+    "total_reviews": 9
+  },
+  "SD": {
+    "business_count": 1,
+    "average_stars": 4.5,
+    "total_reviews": 42
+  },
+  "XMS": {
+    "business_count": 1,
+    "average_stars": 4.0,
+    "total_reviews": 5
+  },
+  "MA": {
+    "business_count": 2,
+    "average_stars": 1.25,
+    "total_reviews": 43
+  },
+  "VI": {
+    "business_count": 1,
+    "average_stars": 2.5,
+    "total_reviews": 10
+  },
+  "VT": {
+    "business_count": 1,
+    "average_stars": 4.5,
+    "total_reviews": 10
+  }
+}

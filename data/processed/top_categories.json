@@ -1,0 +1,802 @@
+[
+  {
+    "category": "Restaurants",
+    "count": 52268
+  },
+  {
+    "category": "Food",
+    "count": 27781
+  },
+  {
+    "category": "Shopping",
+    "count": 24395
+  },
+  {
+    "category": "Home Services",
+    "count": 14356
+  },
+  {
+    "category": "Beauty & Spas",
+    "count": 14292
+  },
+  {
+    "category": "Nightlife",
+    "count": 12281
+  },
+  {
+    "category": "Health & Medical",
+    "count": 11890
+  },
+  {
+    "category": "Local Services",
+    "count": 11198
+  },
+  {
+    "category": "Bars",
+    "count": 11065
+  },
+  {
+    "category": "Automotive",
+    "count": 10773
+  },
+  {
+    "category": "Event Planning & Services",
+    "count": 9895
+  },
+  {
+    "category": "Sandwiches",
+    "count": 8366
+  },
+  {
+    "category": "American (Traditional)",
+    "count": 8139
+  },
+  {
+    "category": "Active Life",
+    "count": 7687
+  },
+  {
+    "category": "Pizza",
+    "count": 7093
+  },
+  {
+    "category": "Coffee & Tea",
+    "count": 6703
+  },
+  {
+    "category": "Fast Food",
+    "count": 6472
+  },
+  {
+    "category": "Breakfast & Brunch",
+    "count": 6239
+  },
+  {
+    "category": "American (New)",
+    "count": 6097
+  },
+  {
+    "category": "Hotels & Travel",
+    "count": 5857
+  },
+  {
+    "category": "Home & Garden",
+    "count": 5799
+  },
+  {
+    "category": "Fashion",
+    "count": 5739
+  },
+  {
+    "category": "Burgers",
+    "count": 5636
+  },
+  {
+    "category": "Arts & Entertainment",
+    "count": 5434
+  },
+  {
+    "category": "Auto Repair",
+    "count": 5433
+  },
+  {
+    "category": "Hair Salons",
+    "count": 5046
+  },
+  {
+    "category": "Nail Salons",
+    "count": 4621
+  },
+  {
+    "category": "Mexican",
+    "count": 4600
+  },
+  {
+    "category": "Italian",
+    "count": 4573
+  },
+  {
+    "category": "Specialty Food",
+    "count": 4233
+  },
+  {
+    "category": "Doctors",
+    "count": 3763
+  },
+  {
+    "category": "Pets",
+    "count": 3758
+  },
+  {
+    "category": "Real Estate",
+    "count": 3577
+  },
+  {
+    "category": "Seafood",
+    "count": 3539
+  },
+  {
+    "category": "Fitness & Instruction",
+    "count": 3293
+  },
+  {
+    "category": "Professional Services",
+    "count": 3270
+  },
+  {
+    "category": "Hair Removal",
+    "count": 3239
+  },
+  {
+    "category": "Desserts",
+    "count": 3186
+  },
+  {
+    "category": "Chinese",
+    "count": 3169
+  },
+  {
+    "category": "Bakeries",
+    "count": 3150
+  },
+  {
+    "category": "Grocery",
+    "count": 3139
+  },
+  {
+    "category": "Salad",
+    "count": 3064
+  },
+  {
+    "category": "Hotels",
+    "count": 2977
+  },
+  {
+    "category": "Chicken Wings",
+    "count": 2966
+  },
+  {
+    "category": "Cafes",
+    "count": 2756
+  },
+  {
+    "category": "Ice Cream & Frozen Yogurt",
+    "count": 2657
+  },
+  {
+    "category": "Caterers",
+    "count": 2645
+  },
+  {
+    "category": "Pet Services",
+    "count": 2626
+  },
+  {
+    "category": "Dentists",
+    "count": 2528
+  },
+  {
+    "category": "Skin Care",
+    "count": 2498
+  },
+  {
+    "category": "Venues & Event Spaces",
+    "count": 2480
+  },
+  {
+    "category": "Tires",
+    "count": 2471
+  },
+  {
+    "category": "Beer",
+    "count": 2413
+  },
+  {
+    "category": "Wine & Spirits",
+    "count": 2413
+  },
+  {
+    "category": "Delis",
+    "count": 2393
+  },
+  {
+    "category": "Oil Change Stations",
+    "count": 2356
+  },
+  {
+    "category": "Waxing",
+    "count": 2333
+  },
+  {
+    "category": "Contractors",
+    "count": 2327
+  },
+  {
+    "category": "Women's Clothing",
+    "count": 2184
+  },
+  {
+    "category": "Massage",
+    "count": 2134
+  },
+  {
+    "category": "Sports Bars",
+    "count": 2110
+  },
+  {
+    "category": "Day Spas",
+    "count": 1997
+  },
+  {
+    "category": "General Dentistry",
+    "count": 1993
+  },
+  {
+    "category": "Education",
+    "count": 1936
+  },
+  {
+    "category": "Flowers & Gifts",
+    "count": 1930
+  },
+  {
+    "category": "Auto Parts & Supplies",
+    "count": 1926
+  },
+  {
+    "category": "Apartments",
+    "count": 1921
+  },
+  {
+    "category": "Convenience Stores",
+    "count": 1919
+  },
+  {
+    "category": "Home Decor",
+    "count": 1892
+  },
+  {
+    "category": "Gyms",
+    "count": 1831
+  },
+  {
+    "category": "Japanese",
+    "count": 1830
+  },
+  {
+    "category": "Pubs",
+    "count": 1821
+  },
+  {
+    "category": "Cocktail Bars",
+    "count": 1718
+  },
+  {
+    "category": "Sushi Bars",
+    "count": 1717
+  },
+  {
+    "category": "Barbeque",
+    "count": 1694
+  },
+  {
+    "category": "Juice Bars & Smoothies",
+    "count": 1684
+  },
+  {
+    "category": "Barbers",
+    "count": 1677
+  },
+  {
+    "category": "Car Dealers",
+    "count": 1665
+  },
+  {
+    "category": "Sporting Goods",
+    "count": 1662
+  },
+  {
+    "category": "Accessories",
+    "count": 1639
+  },
+  {
+    "category": "Cosmetic Dentists",
+    "count": 1630
+  },
+  {
+    "category": "Drugstores",
+    "count": 1630
+  },
+  {
+    "category": "Local Flavor",
+    "count": 1604
+  },
+  {
+    "category": "Furniture Stores",
+    "count": 1597
+  },
+  {
+    "category": "Pet Groomers",
+    "count": 1549
+  },
+  {
+    "category": "Asian Fusion",
+    "count": 1547
+  },
+  {
+    "category": "Cosmetics & Beauty Supply",
+    "count": 1544
+  },
+  {
+    "category": "Jewelry",
+    "count": 1525
+  },
+  {
+    "category": "Steakhouses",
+    "count": 1506
+  },
+  {
+    "category": "Diners",
+    "count": 1494
+  },
+  {
+    "category": "Financial Services",
+    "count": 1487
+  },
+  {
+    "category": "Trainers",
+    "count": 1460
+  },
+  {
+    "category": "Hair Stylists",
+    "count": 1459
+  },
+  {
+    "category": "Arts & Crafts",
+    "count": 1440
+  },
+  {
+    "category": "Department Stores",
+    "count": 1430
+  },
+  {
+    "category": "Electronics",
+    "count": 1422
+  },
+  {
+    "category": "Veterinarians",
+    "count": 1383
+  },
+  {
+    "category": "Massage Therapy",
+    "count": 1357
+  },
+  {
+    "category": "Pet Sitting",
+    "count": 1356
+  },
+  {
+    "category": "Eyelash Service",
+    "count": 1278
+  },
+  {
+    "category": "Food Trucks",
+    "count": 1273
+  },
+  {
+    "category": "Men's Clothing",
+    "count": 1273
+  },
+  {
+    "category": "Mediterranean",
+    "count": 1263
+  },
+  {
+    "category": "Body Shops",
+    "count": 1229
+  },
+  {
+    "category": "Public Services & Government",
+    "count": 1216
+  },
+  {
+    "category": "Heating & Air Conditioning/HVAC",
+    "count": 1199
+  },
+  {
+    "category": "Lounges",
+    "count": 1194
+  },
+  {
+    "category": "Wine Bars",
+    "count": 1192
+  },
+  {
+    "category": "IT Services & Computer Repair",
+    "count": 1189
+  },
+  {
+    "category": "Vegetarian",
+    "count": 1158
+  },
+  {
+    "category": "Laundry Services",
+    "count": 1149
+  },
+  {
+    "category": "Medical Centers",
+    "count": 1131
+  },
+  {
+    "category": "Optometrists",
+    "count": 1112
+  },
+  {
+    "category": "Plumbing",
+    "count": 1111
+  },
+  {
+    "category": "Gas Stations",
+    "count": 1106
+  },
+  {
+    "category": "Music Venues",
+    "count": 1104
+  },
+  {
+    "category": "Donuts",
+    "count": 1097
+  },
+  {
+    "category": "Dry Cleaning & Laundry",
+    "count": 1075
+  },
+  {
+    "category": "Party & Event Planning",
+    "count": 1073
+  },
+  {
+    "category": "Soup",
+    "count": 1061
+  },
+  {
+    "category": "Food Delivery Services",
+    "count": 1050
+  },
+  {
+    "category": "Pet Stores",
+    "count": 1043
+  },
+  {
+    "category": "Tacos",
+    "count": 1020
+  },
+  {
+    "category": "Shoe Stores",
+    "count": 1018
+  },
+  {
+    "category": "Eyewear & Opticians",
+    "count": 1016
+  },
+  {
+    "category": "Southern",
+    "count": 988
+  },
+  {
+    "category": "Parks",
+    "count": 984
+  },
+  {
+    "category": "Books",
+    "count": 975
+  },
+  {
+    "category": "Mags",
+    "count": 975
+  },
+  {
+    "category": "Music & Video",
+    "count": 975
+  },
+  {
+    "category": "Makeup Artists",
+    "count": 973
+  },
+  {
+    "category": "Thai",
+    "count": 971
+  },
+  {
+    "category": "Car Wash",
+    "count": 960
+  },
+  {
+    "category": "Florists",
+    "count": 955
+  },
+  {
+    "category": "Building Supplies",
+    "count": 954
+  },
+  {
+    "category": "Mobile Phones",
+    "count": 952
+  },
+  {
+    "category": "Movers",
+    "count": 948
+  },
+  {
+    "category": "Yoga",
+    "count": 938
+  },
+  {
+    "category": "Specialty Schools",
+    "count": 932
+  },
+  {
+    "category": "Cajun/Creole",
+    "count": 923
+  },
+  {
+    "category": "Tex-Mex",
+    "count": 919
+  },
+  {
+    "category": "Auto Detailing",
+    "count": 906
+  },
+  {
+    "category": "Landscaping",
+    "count": 896
+  },
+  {
+    "category": "Nurseries & Gardening",
+    "count": 892
+  },
+  {
+    "category": "Appliances",
+    "count": 872
+  },
+  {
+    "category": "Beer Bar",
+    "count": 870
+  },
+  {
+    "category": "Discount Store",
+    "count": 868
+  },
+  {
+    "category": "Breweries",
+    "count": 863
+  },
+  {
+    "category": "Transportation",
+    "count": 858
+  },
+  {
+    "category": "Vegan",
+    "count": 856
+  },
+  {
+    "category": "Vietnamese",
+    "count": 852
+  },
+  {
+    "category": "Home Cleaning",
+    "count": 850
+  },
+  {
+    "category": "Tours",
+    "count": 842
+  },
+  {
+    "category": "Sewing & Alterations",
+    "count": 842
+  },
+  {
+    "category": "Indian",
+    "count": 838
+  },
+  {
+    "category": "Men's Hair Salons",
+    "count": 828
+  },
+  {
+    "category": "Latin American",
+    "count": 810
+  },
+  {
+    "category": "Chicken Shop",
+    "count": 808
+  },
+  {
+    "category": "Appliances & Repair",
+    "count": 800
+  },
+  {
+    "category": "Real Estate Services",
+    "count": 800
+  },
+  {
+    "category": "Gift Shops",
+    "count": 796
+  },
+  {
+    "category": "Self Storage",
+    "count": 795
+  },
+  {
+    "category": "Shipping Centers",
+    "count": 792
+  },
+  {
+    "category": "Hardware Stores",
+    "count": 792
+  },
+  {
+    "category": "Printing Services",
+    "count": 790
+  },
+  {
+    "category": "Art Galleries",
+    "count": 786
+  },
+  {
+    "category": "Medical Spas",
+    "count": 781
+  },
+  {
+    "category": "Greek",
+    "count": 779
+  },
+  {
+    "category": "Gluten-Free",
+    "count": 777
+  },
+  {
+    "category": "Hot Dogs",
+    "count": 774
+  },
+  {
+    "category": "Kitchen & Bath",
+    "count": 763
+  },
+  {
+    "category": "Property Management",
+    "count": 759
+  },
+  {
+    "category": "Used",
+    "count": 753
+  },
+  {
+    "category": "Vintage & Consignment",
+    "count": 753
+  },
+  {
+    "category": "Oral Surgeons",
+    "count": 752
+  },
+  {
+    "category": "Banks & Credit Unions",
+    "count": 749
+  },
+  {
+    "category": "Comfort Food",
+    "count": 746
+  },
+  {
+    "category": "Bagels",
+    "count": 738
+  },
+  {
+    "category": "Auto Glass Services",
+    "count": 727
+  },
+  {
+    "category": "Chiropractors",
+    "count": 726
+  },
+  {
+    "category": "Wedding Planning",
+    "count": 709
+  },
+  {
+    "category": "Endodontists",
+    "count": 706
+  },
+  {
+    "category": "Towing",
+    "count": 692
+  },
+  {
+    "category": "Tobacco Shops",
+    "count": 691
+  },
+  {
+    "category": "Car Rental",
+    "count": 670
+  },
+  {
+    "category": "Tanning",
+    "count": 667
+  },
+  {
+    "category": "Orthodontists",
+    "count": 660
+  },
+  {
+    "category": "Ethnic Food",
+    "count": 658
+  },
+  {
+    "category": "Transmission Repair",
+    "count": 639
+  },
+  {
+    "category": "Antiques",
+    "count": 638
+  },
+  {
+    "category": "Dive Bars",
+    "count": 636
+  },
+  {
+    "category": "Mattresses",
+    "count": 630
+  },
+  {
+    "category": "Hair Extensions",
+    "count": 624
+  },
+  {
+    "category": "Buffets",
+    "count": 622
+  },
+  {
+    "category": "Flooring",
+    "count": 621
+  },
+  {
+    "category": "Cheesesteaks",
+    "count": 614
+  },
+  {
+    "category": "Thrift Stores",
+    "count": 610
+  },
+  {
+    "category": "Tattoo",
+    "count": 609
+  },
+  {
+    "category": "Health Markets",
+    "count": 601
+  },
+  {
+    "category": "Caribbean",
+    "count": 590
+  }
+]
