@@ -41,7 +41,7 @@
 
 .axis-label {
     padding: 30;
-
+}
 
 .side-panel {
     width: 30vw;
@@ -71,3 +71,8 @@ body {
     font-family: Arial, sans-serif;
 }
 
+
+#controls{
+    margin-right: 20px;
+
+}
