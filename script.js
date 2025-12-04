@@ -60,8 +60,7 @@ if (isOpenCheckbox) {
     });
 }
 
-function map_plotting() {
-    UpdateDataInRange(); 
+function map_plotting() { // Filter data by isOpen if checked
     // Remove previous marker and circle for current location only
     if (window.currentCircle) {
         map.removeLayer(window.currentCircle);
@@ -85,7 +84,6 @@ function map_plotting() {
     }
     window.businessMarkers = [];
 
-    // Filter data by isOpen if checked
     filteredData = businessData.filter(business => {
         if (!(business.latitude && business.longitude)) return false;
         if (isOpenCheckbox && isOpenCheckbox.checked) {
@@ -93,7 +91,7 @@ function map_plotting() {
         }
         return true;
     });
-
+   
     filteredData.forEach(business => {
            // Scale radius based on review_count (e.g., 3-15 pixels)
         const reviewCount = business.review_count || 0;
@@ -109,6 +107,7 @@ function map_plotting() {
         window.businessMarkers.push(marker);
     });
 
+    UpdateDataInRange(); 
     businessDataInRange.forEach(business => {
         // Map star rating (1-5) to color hue (red=0° to green=120°)
         const stars = business.stars || 1; // default to 1 if missing
