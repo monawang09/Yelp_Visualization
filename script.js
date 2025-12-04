@@ -12,7 +12,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let businessData = [];
 let filteredData = [];
 let businessDataInRange = [];
-let selectedData = [];
+let selectedData = null;
 let myCurrentLocation = [34.4208, -119.6982];
 let userInputRadius = 4000; // Initial radius so the circle border is visible but not full screen
 let currentLocationMarker;
@@ -46,6 +46,7 @@ function sliderToRadius(v) {
 }
 
 function refreshWeb() {
+    map_plotting();
     UpdateDataInRange();
     map_plotting();
 }
@@ -58,12 +59,59 @@ function radiusToSlider(r) {
 }
 
 
-
 // Listen for changes to the isOpenCheckbox
 const isOpenCheckbox = document.getElementById('isOpenCheckbox');
 if (isOpenCheckbox) {
     isOpenCheckbox.addEventListener('change', function() {
-        map_plotting();
+        refreshWeb();
+    });
+}
+
+// Listen for changes to the isOpenCheckbox
+const WifiCheckbox = document.getElementById('wifiCheckbox');
+if (WifiCheckbox) {
+    WifiCheckbox.addEventListener('change', function() {
+        refreshWeb();
+    });
+}
+
+// Listen for changes to the parkingCheckbox
+const parkingCheckbox = document.getElementById('parkingCheckbox');
+if (parkingCheckbox) {
+    parkingCheckbox.addEventListener('change', function() {
+        refreshWeb();
+    });
+}
+
+// Listen for changes to the driveThroughCheckbox
+const driveThroughCheckbox = document.getElementById('driveThroughCheckbox');
+if (driveThroughCheckbox) {
+    driveThroughCheckbox.addEventListener('change', function() {
+        refreshWeb();
+    });
+}
+
+// Listen for changes to the dogsAllowedCheckbox
+const dogsAllowedCheckbox = document.getElementById('dogsAllowedCheckbox');
+if (dogsAllowedCheckbox) {
+    dogsAllowedCheckbox.addEventListener('change', function() {
+        refreshWeb();
+    });
+}
+
+// Listen for changes to the ambienceCheckbox
+const ambienceCheckbox = document.getElementById('ambienceCheckbox');
+if (ambienceCheckbox) {
+    ambienceCheckbox.addEventListener('change', function() {
+        refreshWeb();
+    });
+}
+
+// Listen for changes to the musicCheckbox
+const musicCheckbox = document.getElementById('musicCheckbox');
+if (musicCheckbox) {
+    musicCheckbox.addEventListener('change', function() {
+        refreshWeb();
     });
 }
 
@@ -99,6 +147,31 @@ function map_plotting() { // Filter data by isOpen if checked
         if (isOpenCheckbox && isOpenCheckbox.checked) {
             return String(business.is_open) === '1';
         }
+        if (WifiCheckbox && WifiCheckbox.checked) {
+            if (!business.attributes || !business.attributes.WiFi) return false;
+            if (business.attributes.WiFi === 'no' || business.attributes.WiFi === 'None') return false;
+        }
+        if (parkingCheckbox && parkingCheckbox.checked) {
+            if (!business.attributes || !business.attributes.BusinessParking) return false;
+            const parkingInfo = business.attributes.BusinessParking;
+            if (!parkingInfo.street && !parkingInfo.lot && !parkingInfo.garage) return false;
+        }
+        if (driveThroughCheckbox && driveThroughCheckbox.checked) {
+            if (!business.attributes || !business.attributes.DriveThru) return false;
+            if (business.attributes.DriveThru === 'False' || business.attributes.DriveThru === 'None') return false;
+        }
+        if (dogsAllowedCheckbox && dogsAllowedCheckbox.checked) {
+            if (!business.attributes || !business.attributes.DogsAllowed) return false;
+            if (business.attributes.DogsAllowed === 'False' || business.attributes.DogsAllowed === 'None') return false;
+        }
+        if (ambienceCheckbox && ambienceCheckbox.checked) {
+            if (!business.attributes || !business.attributes.Ambience) return false;
+            if (business.attributes.Ambience === 'False' || business.attributes.Ambience === 'None') return false;
+        }
+        if (musicCheckbox && musicCheckbox.checked) {
+            if (!business.attributes || !business.attributes.Music) return false;
+            if (business.attributes.Music === 'False' || business.attributes.Music === 'None') return false;
+        }
         return true;
     });
    
@@ -116,6 +189,19 @@ function map_plotting() { // Filter data by isOpen if checked
         .addTo(map);
         window.businessMarkers.push(marker);
     });
+
+    businessDataInRange = [];
+    filteredData.forEach(business => {
+        if (business.latitude && business.longitude) {
+            const distance = getDistanceFromLatLonInMeters(
+                myCurrentLocation[0], myCurrentLocation[1],
+                parseFloat(business.latitude), parseFloat(business.longitude)
+            );
+            if (distance <= userInputRadius) {
+                businessDataInRange.push(business);
+            }
+        }
+    });
  
     businessDataInRange.forEach(business => {
         // Map star rating (1-5) to color hue (red=0° to green=120°)
@@ -126,7 +212,7 @@ function map_plotting() { // Filter data by isOpen if checked
         const g = Math.round(255 * Math.pow(t, 1.5)); // slower increase
         const b = 0; // no blue component
         // blend computed color with gray using lambda (0 => original, 1 => full gray)
-        lambda = selectedData==businessDataInRange ? 0 : 0.3; // adjust 0..1 as needed
+        lambda = selectedData ? 0.5 : 0; // adjust 0..1 as needed
         const gray = 128;
         const br = Math.round((1 - lambda) * r + lambda * gray);
         const bg = Math.round((1 - lambda) * g + lambda * gray);
@@ -188,7 +274,7 @@ function map_plotting() { // Filter data by isOpen if checked
         window.businessMarkers.push(marker);
     });
 
-    if (selectedData !== businessDataInRange) {
+    if (selectedData) {
         selectedData.forEach(business => {
            // Map star rating (1-5) to color hue (red=0° to green=120°)
             const stars = business.stars || 1; // default to 1 if missing
@@ -258,7 +344,6 @@ function UpdateDataInRange() {
     });
     console.log("Businesses in range:", businessDataInRange.length);
     if (businessDataInRange.length === 0) return; // avoid plotting empty data
-    selectedData = businessDataInRange; // initialize selectedData to all in-range data
     plot_reviewdensity();
     plot_PricelevelxRating();
 }
@@ -293,7 +378,7 @@ function plot_reviewdensity() {
     // remove the previous chart (only the ones with this class)
     d3.selectAll("svg.review-density").remove();
 
-    rawData = selectedData.map(d => +d.review_count);
+    rawData = (selectedData || businessDataInRange).map(d => +d.review_count);
     const cutoff = 700;
     const bin_width = 100;
 
@@ -469,7 +554,7 @@ function plot_PricelevelxRating() {
                 .attr("stroke-width", 0.3);
         })
         .on("mouseout", function (event, d) {
-            selectedData = businessDataInRange; // reset to all data
+            selectedData = null; // reset to all data
             plot_reviewdensity(); // update the review density plot based on selected data
             map_plotting(); // replot with same global businessData
              
