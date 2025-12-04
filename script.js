@@ -205,7 +205,9 @@ function UpdateDataInRange() {
         }
     });
     console.log("Businesses in range:", businessDataInRange.length);
+    if (businessDataInRange.length === 0) return; // avoid plotting empty data
     plot_reviewdensity();
+    plot_PricelevelxRating();
 }
 
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
@@ -314,4 +316,76 @@ function plot_reviewdensity() {
         .attr("x", - (height / 2))
         .attr("y", 10)                   // a bit left of the y axis
         .text("Number of restaurants");
+}
+
+function plot_PricelevelxRating() {
+    // remove the previous chart (only the ones with this class)
+    d3.selectAll("svg.pricelevel-rating").remove();
+
+    // Set up dimensions and margins
+    const width = 600;
+    const height = 400;
+    const margin = {top: 20, right: 30, bottom: 30, left: 40}; 
+
+    console.log(businessDataInRange);
+    const x = d3.scaleLinear()
+        .domain([1, 5]).nice()
+        .range([margin.left, width - margin.right]);
+
+    const y = d3.scaleLinear()
+        .domain([1, 4]).nice()
+        .range([height - margin.bottom, margin.top]);
+
+    // Create SVG container
+    const svg = d3.select("#pricerating")
+        .append("svg")
+        .attr("class", "pricelevel-rating")
+        .attr("width", width)
+        .attr("height", height);
+
+    const points = businessDataInRange.filter(d => {
+        const v = d.attributes?.RestaurantsPriceRange2;
+        return v !== null && v !== undefined && v !== "None";
+        // and optionally: && v !== "" && v !== 0
+        });
+    
+    // Draw points
+    svg.append("g")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .selectAll("circle")
+        .data(points)
+        .join("circle")
+        .attr("cx", d => x(+d.stars))
+        .attr("cy", d => y(+d.attributes.RestaurantsPriceRange2))
+        .attr("r", 4)
+        .attr("fill", "orange")
+        .attr("fill-opacity", 0.7);
+
+    // X axis
+    svg.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x));
+
+    // Y axis
+    svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y));
+
+    // X axis label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("x", (width) / 2)
+        .attr("y", height)           // a bit below the x axis
+        .text("Star Rating");
+
+    // Y axis label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("x", - (height / 2))
+        .attr("y", 10)                   // a bit left of the y axis
+        .text("Price Level (RestaurantsPriceRange2)");  
 }
