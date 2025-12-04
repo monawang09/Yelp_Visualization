@@ -32,6 +32,7 @@ fetch('../data/processed/ca_restaurants.json')
 
         setupRadiusListener();
         map_plotting();
+        map_plotting(); //make sure everything is plotted correctly
     })
 
 // slider value (0–100) -> log-scaled radius (100–4000)
@@ -60,6 +61,7 @@ if (isOpenCheckbox) {
 }
 
 function map_plotting() {
+    UpdateDataInRange(); 
     // Remove previous marker and circle for current location only
     if (window.currentCircle) {
         map.removeLayer(window.currentCircle);
@@ -130,7 +132,6 @@ function map_plotting() {
         fillColor: '#30f',
         fillOpacity: 0.2
     }).addTo(map);
-    UpdateDataInRange(); 
 }
 
 function setupRadiusListener() {
