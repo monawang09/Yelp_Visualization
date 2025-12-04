@@ -10,6 +10,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 let businessData = [];
+let businessDataInRange = [];
 let myCurrentLocation = [34.4208, -119.6982];
 let userInputRadius = 500; // Default radius
 
@@ -19,9 +20,12 @@ fetch('../data/processed/ca_restaurants.json')
     .then(data => {
         businessData = data;
         map_plotting();
+        console.log(businessData.length);
+
+        setupRadiusListener();
+        plot_reviewdensity(businessData);
     })
 
-console.log(businessData.length);
 
 let currentLocationMarker;
 
@@ -86,41 +90,41 @@ function map_plotting() {
         fillColor: '#30f',
         fillOpacity: 0.2
     }).addTo(map);
+    UpdateDataInRange();
+    console.log("Businesses in range:", businessDataInRange.length);
 }
 
+function setupRadiusListener() {
+  const radiusRange = document.getElementById('radiusRange');
+  const radiusValue = document.getElementById('radiusValue');
 
-// Listen for changes to the radius slider
-const radiusRange = document.getElementById('radiusRange');
-const radiusValue = document.getElementById('radiusValue');
-if (radiusRange && radiusValue) {
-    radiusRange.addEventListener('input', function() {
-        userInputRadius = parseInt(radiusRange.value);
-        radiusValue.textContent = userInputRadius;
-        console.log("hi");
-        map_plotting(); // replot
-    });
+  if (!radiusRange || !radiusValue) return;
+
+  radiusRange.addEventListener('input', function() {
+    userInputRadius = parseInt(radiusRange.value, 10);
+    radiusValue.textContent = userInputRadius;
+
+    map_plotting(); // replot with same global businessData
+  });
 }
 
 
 // Filter within the range, and it's not working ;0;
 // Function to filter data points within xRadius of myCurrentLocation
-function filterWithinRadius(radius) {
-    const filteredRestaurants = [];
+function UpdateDataInRange() { 
+    businessDataInRange = [];
     businessData.forEach(business => {
         if (business.latitude && business.longitude) {
             const distance = getDistanceFromLatLonInMeters(
                 myCurrentLocation[0], myCurrentLocation[1],
                 parseFloat(business.latitude), parseFloat(business.longitude)
             );
-            if (distance <= radius) {
-                filteredRestaurants.push(business);
+            if (distance <= userInputRadius) {
+                businessDataInRange.push(business);
             }
         }
     });
-    return filteredRestaurants;
 }
-
-console.log(filterWithinRadius(500));
 
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
     const R = 6371000; 
@@ -133,4 +137,66 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     return distance;
+}
+
+function plot_reviewdensity(datajson) {
+
+  const rawData = datajson.map(d => +d.review_count);
+  const data_min = d3.min(rawData);
+  const cutoff = 700;
+  const bin_width = 100;
+
+  // Clamp values above 1000 into the 1000+ bin
+  const data = rawData.map(d => Math.min(d, cutoff+bin_width));
+
+  // Set up dimensions and margins
+  const width = 800;
+  const height = 400;
+  const margin = {top: 20, right: 30, bottom: 30, left: 40};
+
+  // Create SVG container
+  const svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  // X scale only goes up to 1000
+  const x = d3.scaleLinear()
+    .domain([data_min, cutoff+bin_width]).nice()
+    .range([margin.left, width - margin.right]);
+
+  // Histogram on the *clamped* data
+  const bins = d3.bin()
+    .domain(x.domain())
+    .thresholds(cutoff/bin_width+1)(data);
+
+  // Y scale
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(bins, d => d.length)]).nice()
+    .range([height - margin.bottom, margin.top]);
+
+  // Draw bars
+  svg.append("g")
+    .attr("fill", "steelblue")
+    .selectAll("rect")
+    .data(bins)
+    .join("rect")
+      .attr("x", d => x(d.x0) + 1)
+      .attr("y", d => y(d.length))
+      .attr("width", d => x(d.x1) - x(d.x0) - 1)
+      .attr("height", d => y(0) - y(d.length));
+
+  // X axis: show "1000+" at the end
+  svg.append("g")
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+    .call(
+      d3.axisBottom(x)
+        .ticks(10)
+        .tickFormat(d => d === cutoff+bin_width ? cutoff.toString()+"+" : d)
+    );
+
+  // Y axis
+  svg.append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y));
 }
