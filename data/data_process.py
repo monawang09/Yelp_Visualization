@@ -196,7 +196,10 @@ def get_data_in_state(processed_csv, state):
     print(f'Found categories containing "Restaurants": {state_df["categories"].str.contains("Restaurants", na=False).sum()} businesses.')
     print(f'Found categories containing "Food": {state_df["categories"].str.contains("Food", na=False).sum()} businesses.')
     print(f'Found categories containing both "Restaurants" or "Food": {state_df[state_df["categories"].str.contains("Restaurants", na=False) | state_df["categories"].str.contains("Food", na=False)].shape[0]} businesses.')
+    
     state_df_restaurants = state_df[state_df["categories"].str.contains("Restaurants", na=False) | state_df["categories"].str.contains("Food", na=False)]
+    state_df_restaurants = state_df_restaurants[state_df_restaurants["attributes"].str.contains("RestaurantsPriceRange2", na=False)]
+    print(f'Filtered down to {len(state_df_restaurants)} restaurants in state {state} with "RestaurantsPriceRange2" attribute.')
     print(f'Found most density of attributes containing "RestaurantsPriceRange2" in cities: {state_df_restaurants["city"].value_counts().head(5).to_dict()}')
     # Extract attribute tags (keys) from JSON strings
     attribute_tags = Counter()
