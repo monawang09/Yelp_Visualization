@@ -16,6 +16,7 @@ writes output into a `processed` subdirectory under `data`.
 import os
 import json
 import csv
+import ast
 import pandas as pd
 from collections import defaultdict, Counter
 from typing import Dict, Any, Iterable
@@ -185,14 +186,29 @@ def get_data_in_state(processed_csv, state):
     Returns:
     - pandas DataFrame with businesses in the specified state
     """
-    
     df = pd.read_csv(processed_csv)
+    print(f'Found total {len(df)} businesses in dataset.')
+    print(f'All states in dataset in frequencies order: {df["state"].value_counts().to_dict()}')
+
     state_df = df[df['state'] == state]
     print(f'Found {len(state_df)} businesses in state {state}.')
-    print(f'state_df columns: {state_df.columns.tolist()}')
     print(f'Found attributes containing "RestaurantsPriceRange2": {state_df["attributes"].str.contains("RestaurantsPriceRange2", na=False).sum()} businesses.') 
     print(f'Found categories containing "Restaurants": {state_df["categories"].str.contains("Restaurants", na=False).sum()} businesses.')
-    return state_df
+
+    state_df_restaurants = state_df[state_df["attributes"].str.contains("RestaurantsPriceRange2", na=False)]
+    print(f'Found most density of attributes containing "RestaurantsPriceRange2" in cities: {state_df_restaurants["city"].value_counts().head(5).to_dict()}')
+    # Extract attribute tags (keys) from JSON strings
+    attribute_tags = Counter()
+    for attr_str in state_df_restaurants["attributes"].dropna():
+        try:
+            attr_dict = ast.literal_eval(attr_str)
+            attribute_tags.update(attr_dict.keys())
+        except (ValueError, SyntaxError) as e:
+            print(f'Failed to parse attributes: {attr_str}')
+            pass
+    print(f'Total unique attribute tags found: {len(attribute_tags)}')
+    print(f'All attribute tags in frequencies order: {attribute_tags.most_common()}')
+    return state_df 
 
 if __name__ == '__main__':
     NEED_UPDTATE = False  # Set to True to reprocess raw data
@@ -201,4 +217,4 @@ if __name__ == '__main__':
     processed_csv = os.path.join(data_dir, 'processed', 'businesses.csv')
     if not os.path.isfile(processed_csv) or NEED_UPDTATE:
         process_raw()
-    get_data_in_state(processed_csv, 'CA')
+    get_data_in_state(processed_csv, 'PA')
