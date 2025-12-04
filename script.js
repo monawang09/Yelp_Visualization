@@ -34,6 +34,7 @@ fetch('../data/processed/ca_restaurants.json')
         setupRadiusListener();
         setupRatingListener();
         map_plotting();
+        UpdateDataInRange();
         map_plotting(); //make sure everything is plotted correctly
     })
 
@@ -111,8 +112,7 @@ function map_plotting() { // Filter data by isOpen if checked
         .addTo(map);
         window.businessMarkers.push(marker);
     });
-
-    UpdateDataInRange(); 
+ 
     businessDataInRange.forEach(business => {
         // Map star rating (1-5) to color hue (red=0° to green=120°)
         const stars = business.stars || 1; // default to 1 if missing
@@ -121,7 +121,14 @@ function map_plotting() { // Filter data by isOpen if checked
         const r = Math.round(255 * Math.pow(t, 0.5)); // black to red/white
         const g = Math.round(255 * Math.pow(t, 1.5)); // slower increase
         const b = 0; // no blue component
-        const color = `rgb(${r}, ${g}, ${b})`;
+        // blend computed color with gray using lambda (0 => original, 1 => full gray)
+        lambda = selectedData==businessDataInRange ? 0 : 0.3; // adjust 0..1 as needed
+        const gray = 128;
+        const br = Math.round((1 - lambda) * r + lambda * gray);
+        const bg = Math.round((1 - lambda) * g + lambda * gray);
+        const bb = Math.round((1 - lambda) * b + lambda * gray);
+        const color = `rgb(${br}, ${bg}, ${bb})`;
+
         // Scale radius based on review_count (e.g., 3-15 pixels)
         const reviewCount = business.review_count || 0;
         const markerRadius = Math.min(3 + reviewCount / 50, 15); // scale and cap at 15
@@ -176,6 +183,31 @@ function map_plotting() { // Filter data by isOpen if checked
         .bindPopup(`<b>${business.name}</b><br>Rating: ${business.stars}`);
         window.businessMarkers.push(marker);
     });
+
+    if (selectedData !== businessDataInRange) {
+        selectedData.forEach(business => {
+           // Map star rating (1-5) to color hue (red=0° to green=120°)
+            const stars = business.stars || 1; // default to 1 if missing
+            // Map star rating (1-5) to afmhot colormap: 1→black, 5→white/yellow
+            const t = (stars - 1) / 4; // normalize to 0-1
+            const r = Math.round(255 * Math.pow(t, 0.5)); // black to red/white
+            const g = Math.round(255 * Math.pow(t, 1.5)); // slower increase
+            const b = 0; // no blue component
+            const color = `rgb(${r}, ${g}, ${b})`;
+            // Scale radius based on review_count (e.g., 3-15 pixels)
+            const reviewCount = business.review_count || 0;
+            const markerRadius = Math.min(3 + reviewCount / 50, 15); // scale and cap at 15
+            
+            const marker = L.circleMarker([business.latitude, business.longitude], {
+                radius: markerRadius,
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.7
+            })
+            .addTo(map);
+            window.businessMarkers.push(marker);
+        });
+    }
 }
 
 function setupRatingListener() {
@@ -185,6 +217,8 @@ function setupRatingListener() {
     if (!ratingRange || !ratingValue) return;
     ratingRange.addEventListener('input', function() {
         ratingValue.textContent = ratingRange.value;
+
+        UpdateDataInRange();
         map_plotting(); // replot with same global businessData
     });
 }
@@ -199,6 +233,7 @@ function setupRadiusListener() {
     userInputRadius = parseInt(sliderToRadius(radiusRange.value), 10);
     radiusValue.textContent = userInputRadius;
 
+    UpdateDataInRange();
     map_plotting(); // replot with same global businessData
   });
 }
@@ -418,7 +453,8 @@ function plot_PricelevelxRating() {
             
             selectedData = d.dataPoints;
             plot_reviewdensity(); // update the review density plot based on selected data
-            
+            map_plotting(); // update the map plotting based on selected data
+
             d3.select(this)
                 .raise() // bring this rect above other rects (labels still on top)
                 .transition()
@@ -433,7 +469,8 @@ function plot_PricelevelxRating() {
         .on("mouseout", function (event, d) {
             selectedData = businessDataInRange; // reset to all data
             plot_reviewdensity(); // update the review density plot based on selected data
-            
+            map_plotting(); // replot with same global businessData
+             
             d3.select(this)
                 .transition()
                 .duration(120)
