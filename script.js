@@ -12,6 +12,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let businessData = [];
 let filteredData = [];
 let businessDataInRange = [];
+let selectedData = [];
 let myCurrentLocation = [34.4208, -119.6982];
 let userInputRadius = 4000; // Initial radius so the circle border is visible but not full screen
 let currentLocationMarker;
@@ -220,6 +221,7 @@ function UpdateDataInRange() {
     });
     console.log("Businesses in range:", businessDataInRange.length);
     if (businessDataInRange.length === 0) return; // avoid plotting empty data
+    selectedData = businessDataInRange; // initialize selectedData to all in-range data
     plot_reviewdensity();
     plot_PricelevelxRating();
 }
@@ -254,8 +256,7 @@ function plot_reviewdensity() {
     // remove the previous chart (only the ones with this class)
     d3.selectAll("svg.review-density").remove();
 
-    rawData = businessDataInRange.map(d => +d.review_count);
-
+    rawData = selectedData.map(d => +d.review_count);
     const cutoff = 700;
     const bin_width = 100;
 
@@ -263,7 +264,7 @@ function plot_reviewdensity() {
     data = rawData.map(d => Math.min(d, cutoff+bin_width));
 
     // Set up dimensions and margins
-    const width = 600;
+    const width = 620;
     const height = 400;
     const margin = {top: 20, right: 30, bottom: 30, left: 40};
 
@@ -342,13 +343,18 @@ function plot_PricelevelxRating() {
     const margin = {top: 20, right: 30, bottom: 30, left: 40}; 
 
     console.log(businessDataInRange);
-    const x = d3.scaleLinear()
-        .domain([1, 5]).nice()
-        .range([margin.left, width - margin.right]);
+    
+    const stars = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];     // or whatever star values you have
+    const prices = [1, 2, 3, 4];       // price ranges 1–4, etc.
+    const x = d3.scaleBand()
+    .domain(stars)
+    .range([margin.left, width - margin.right])
+    .padding(0.05);
 
-    const y = d3.scaleLinear()
-        .domain([1, 4]).nice()
-        .range([height - margin.bottom, margin.top]);
+    const y = d3.scaleBand()
+    .domain(prices)
+    .range([margin.top, height - margin.bottom])
+    .padding(0.05);
 
     // Create SVG container
     const svg = d3.select("#pricerating")
@@ -360,31 +366,105 @@ function plot_PricelevelxRating() {
     const points = businessDataInRange.filter(d => {
         const v = d.attributes?.RestaurantsPriceRange2;
         return v !== null && v !== undefined && v !== "None";
-        // and optionally: && v !== "" && v !== 0
+    });
+
+    // Create grid bins (5x4 grid for star rating x price level)
+    const gridBins = d3.rollup(
+        points,
+        v => v.length,
+        d => Math.floor(d.stars*2)/2,
+        d => Math.floor(d.attributes.RestaurantsPriceRange2)
+    );
+
+    // Convert to array format for drawing
+    const gridData = [];
+    gridBins.forEach((priceMap, starBin) => {
+        priceMap.forEach((count, priceBin) => {
+            gridData.push({
+                stars: starBin,
+                price: priceBin,
+                count: count,
+                dataPoints: points.filter(d => Math.floor(d.attributes.RestaurantsPriceRange2) === priceBin && Math.floor(d.stars*2)/2 === starBin)
+            });
         });
-    
-    // Draw points
-    svg.append("g")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 1.5)
-        .selectAll("circle")
-        .data(points)
-        .join("circle")
-        .attr("cx", d => x(+d.stars))
-        .attr("cy", d => y(+d.attributes.RestaurantsPriceRange2))
-        .attr("r", 4)
-        .attr("fill", "orange")
-        .attr("fill-opacity", 0.7);
+    });
 
-    // X axis
-    svg.append("g")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x));
+    // Color scale based on count
+    const colorScale = d3.scaleLinear()
+        .domain([0, d3.max(gridData, d => d.count)])
+        .range(["white", "steelblue"]);
 
-    // Y axis
+    const cellWidth = (width - margin.left - margin.right) / 5;
+    const cellHeight = (height - margin.top - margin.bottom) / 4;
+
+    // Draw grid cells
     svg.append("g")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y));
+    .selectAll("rect")
+    .data(gridData)
+    .join("rect")
+        .attr("class", "grid-cell")
+        .attr("x", d => x(d.stars))
+        .attr("y", d => y(d.price))
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .attr("fill", d => colorScale(d.count))
+        .attr("stroke", "none")
+        .on("mouseover", function (event, d) {
+            const cellX = x(d.stars);
+            const cellY = y(d.price);
+            const w = x.bandwidth();
+            const h = y.bandwidth();
+            const scale = 1.2;  // how much bigger you want on hover
+            
+            selectedData = d.dataPoints;
+            plot_reviewdensity(); // update the review density plot based on selected data
+            
+            d3.select(this)
+                .raise() // bring this rect above other rects (labels still on top)
+                .transition()
+                .duration(120)
+                .attr("x", cellX - (w * (scale - 1) / 2))
+                .attr("y", cellY - (h * (scale - 1) / 2))
+                .attr("width", w * scale)
+                .attr("height", h * scale)
+                .attr("stroke", "grey")
+                .attr("stroke-width", 0.3);
+        })
+        .on("mouseout", function (event, d) {
+            selectedData = businessDataInRange; // reset to all data
+            plot_reviewdensity(); // update the review density plot based on selected data
+            
+            d3.select(this)
+                .transition()
+                .duration(120)
+                .attr("x", x(d.stars))
+                .attr("y", y(d.price))
+                .attr("width", x.bandwidth())
+                .attr("height", y.bandwidth())
+                .attr("stroke", "none");
+        });
+
+    // Add count labels
+    svg.append("g")
+    .selectAll("text")
+    .data(gridData)
+    .join("text")
+        .attr("x", d => x(d.stars) + x.bandwidth() / 2)
+        .attr("y", d => y(d.price) + y.bandwidth() / 2)
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .attr("font-size", "12px")
+        .text(d => d.count);
+
+    // X axis (stars)
+    svg.append("g")
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+    .call(d3.axisBottom(x));
+
+    // Y axis (price)
+    svg.append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y));
 
     // X axis label
     svg.append("text")
